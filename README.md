@@ -1,6 +1,6 @@
 # TriggerMonitoring
 
-##To setup the code:
+## To setup the code:
 
 ```
 cmsrel 10_1_7
@@ -23,20 +23,20 @@ git clone https://github.com/Michael-Krohn/TriggerMonitoring.git
 scram b -j 8
 ```
 
-##To run the analysis code:
+## To run the analysis code:
 
-###Locally:
+### Locally:
 ```
 cd python
 cmsRun ConfFile_DoubleB_cfg.py
 ```
 
-###Crab:
+### Crab:
 ```
 crab submit crabConfig.py
 ```
 
-##To run the plotting code:
+## To run the plotting code:
 ```
 cd test
 python plotTurnOn.py --dir DoubleB_Efficiencies --lumi 35.9 --numerator demo/histoDir/recoAK8pT_DoubleBTrig_np4 --denominator demo/histoDir/recoAK8pT -i ../python/DoubleBTriggers_Output.root
