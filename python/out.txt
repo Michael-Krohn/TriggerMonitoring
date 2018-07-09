@@ -1,0 +1,15 @@
+08-Jul-2018 14:35:30 CDT  Initiating request to open file root://cmsxrootd-site.fnal.gov//store/data/Run2018B/JetHT/MINIAOD/PromptReco-v1/000/317/087/00000/2C959967-9E64-E811-A782-FA163E480AB4.root
+%MSG-w XrdAdaptorInternal:  file_open 08-Jul-2018 14:36:58 CDT pre-events
+Failed to open file at URL root://cmsxrootd-site.fnal.gov:1094//store/data/Run2018B/JetHT/MINIAOD/PromptReco-v1/000/317/087/00000/2C959967-9E64-E811-A782-FA163E480AB4.root.
+%MSG
+%MSG-w XrdAdaptor:  file_open 08-Jul-2018 14:38:49 CDT pre-events
+Data is served from T2_US_Caltech instead of original site T1_US_FNAL
+%MSG
+08-Jul-2018 14:38:53 CDT  Successfully opened file root://cmsxrootd-site.fnal.gov//store/data/Run2018B/JetHT/MINIAOD/PromptReco-v1/000/317/087/00000/2C959967-9E64-E811-A782-FA163E480AB4.root
+08-Jul-2018 14:39:12 CDT  Closed file root://cmsxrootd-site.fnal.gov//store/data/Run2018B/JetHT/MINIAOD/PromptReco-v1/000/317/087/00000/2C959967-9E64-E811-A782-FA163E480AB4.root
+----- Begin Fatal Exception 08-Jul-2018 14:39:12 CDT-----------------------
+An exception of category 'PluginNotFound' occurred while
+   [0] Constructing the EventProcessor
+Exception Message:
+Unable to find plugin 'DoubleBAnalyzer' in category 'CMS EDM Framework Module'. Please check spelling of name.
+----- End Fatal Exception -------------------------------------------------
