@@ -1,7 +1,8 @@
 # TriggerMonitoring
 
 To setup the code:
-'''
+
+```
 cmsrel 10_1_7
 cd CMSSW_10_1_7/src
 cmsenv
@@ -20,4 +21,4 @@ scram b -j 8
 
 git clone https://github.com/Michael-Krohn/TriggerMonitoring.git
 scram b -j 8
-'''
+```
