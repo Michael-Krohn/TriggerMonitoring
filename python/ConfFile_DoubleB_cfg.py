@@ -2,10 +2,22 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("Demo")
 
+process.load('Configuration.StandardSequences.Services_cff')
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.load('Configuration.EventContent.EventContent_cff')
+process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
+process.load('Configuration.StandardSequences.MagneticField_38T_cff')
+process.load('Configuration.StandardSequences.EndOfProcess_cff')
+
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
+from Configuration.AlCa.autoCond import autoCond
+process.GlobalTag = GlobalTag(process.GlobalTag, '101X_dataRun2_Prompt_v11') #
+
+
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
 #process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 #process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
@@ -20,13 +32,14 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
 
 import FWCore.Utilities.FileUtils as FileUtils
-mylist = FileUtils.loadListFromFile ('infile.txt') 
+mylist = FileUtils.loadListFromFile ('infile_Run2018B_v1.txt') 
 readFiles = cms.untracked.vstring( *mylist)
 
 #myParentlist = FileUtils.loadListFromFile ('infile6_parent.txt')
 #readParentFiles = cms.untracked.vstring( *myParentlist)
 
 process.source = cms.Source('PoolSource', 
+#          fileNames = cms.untracked.vstring ('root://cmsxrootd.fnal.gov//store/data/Run2018B/JetHT/MINIAOD/PromptReco-v1/000/317/930/00000/000B0765-D573-E811-AAA2-FA163E5B9703.root'),
                             fileNames = readFiles
 #                            secondaryFileNames = readParentFiles)
 )
@@ -46,14 +59,16 @@ process.TFileService = cms.Service("TFileService",
 ##      triggerResults  = cms.InputTag("TriggerResults", "", "TEST"),
 ##      muons           = cms.InputTag("hltScoutingMuonPackerCalo", "", "TEST"),
 ## )
+from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
+jetToolbox( process, 'ak8', 'jetSequence', 'out', PUMethod='Puppi', miniAOD=True, runOnMC=False, addSoftDrop=True)
+#jetToolbox( process, 'ak8', 'jetSequence', 'out', PUMethod='Puppi', miniAOD=True, runOnMC=False, bTagDiscriminators='pfBoostedDoubleSecondaryVertexAK8BJetTags', addSoftDrop=True)
 
 process.demo = cms.EDAnalyzer('DoubleBAnalyzer',
      triggerResults  = cms.InputTag("TriggerResults", "", "HLT"),
 #     caloJets        = cms.InputTag("hltScoutingCaloPacker", "", "HLT"),
 #     pfJets          = cms.InputTag("hltScoutingPFPacker", "", "HLT"),
-     recoAK8Jets        = cms.InputTag("slimmedJetsAK8", "", "RECO"),
-#     recoAK8Jets        = cms.untracked.InputTag("slimmedJetsAK8", "", "RECO"),
-#     muons           = cms.InputTag("hltScoutingMuonPacker", "", "HLT"),
+     recoAK8Jets        = cms.InputTag("selectedPatJetsAK8PFPuppi"),
+#     recoAK8Jets        = cms.InputTag("slimmedJetsAK8", "", "RECO"),
      bDiscriminators = cms.vstring(      # list of b-tag discriminators to access
 #        'pfTrackCountingHighEffBJetTags',
 #        'pfTrackCountingHighPurBJetTags',
@@ -61,7 +76,7 @@ process.demo = cms.EDAnalyzer('DoubleBAnalyzer',
 #        'pfJetBProbabilityBJetTags',
 #        'pfSimpleSecondaryVertexHighEffBJetTags',
 #        'pfSimpleSecondaryVertexHighPurBJetTags',
-#        'pfCombinedSecondaryVertexV2BJetTags',
+#        'pfCombinedSecondaryVertexV2BJetTags_test',
 #        'pfCombinedInclusiveSecondaryVertexV2BJetTags',
 	'pfBoostedDoubleSecondaryVertexAK8BJetTags'
 #        'pfCombinedMVABJetTags'

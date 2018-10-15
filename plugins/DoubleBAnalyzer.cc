@@ -43,6 +43,7 @@
 #include <TLorentzVector.h>
 #include "TH1.h"
 #include "TVector3.h"
+#include "TMath.h"
 
 class DoubleBAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
    public:
@@ -62,7 +63,8 @@ class DoubleBAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  
 //  edm::EDGetTokenT<ScoutingCaloJetCollection>      caloJetLabel_;
 //  edm::EDGetTokenT<ScoutingPFJetCollection>        pfJetLabel_;
 //  edm::InputTag recoJetLabel_;
-  edm::EDGetTokenT<std::vector<pat::Jet>>             recoJetLabel_;
+  edm::EDGetToken             recoJetLabel_;
+//  edm::EDGetTokenT<std::vector<pat::Jet>>             recoJetLabel_;
 //  edm::EDGetTokenT<ScoutingMuonCollection>         muonLabel_;
   edm::Service<TFileService> fs;
 
@@ -71,8 +73,14 @@ class DoubleBAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  
 
   int passDoubleBTrig_np4;
   int passDoubleBTrig_np2;
-  int passMonitorAK8260Trig;
+  int passCSVTrig_p17;
+  int passMonitorAK8200Trig;
   int passMonitorAK8360Trig;
+  int passMonitorAK8420Trig;
+  int passMonitorAK8jetTrig;
+  int passMonitorMuTrig;
+
+  int failingModule;
 
   double recoAK8pT;
   double recoAK8eta;
@@ -80,34 +88,120 @@ class DoubleBAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  
   double recoAK8DoubleB;
   double maxRecoAK8DoubleB;
 
+  TH1F *h1_recoAK8pT_DoubleBTrig_np4_Mumonitoring;
+
   TH1F *h1_recoAK8pT_DoubleBTrig_np4_monitoring;
   TH1F *h1_recoAK8pT_DoubleBTrig_np2_monitoring;
-  TH1F *h1_recoAK8pT_DoubleBTrig_np4_DB06_monitoring;
-  TH1F *h1_recoAK8pT_DoubleBTrig_np2_DB06_monitoring;
-  TH1F *h1_recoAK8pT_DoubleBTrig_np4_DB09_monitoring;
-  TH1F *h1_recoAK8pT_DoubleBTrig_np2_DB09_monitoring;
-  TH1F *h1_recoAK8pT_DoubleBTrig_np4_DB03Inv_monitoring;
-  TH1F *h1_recoAK8pT_DoubleBTrig_np2_DB03Inv_monitoring;
+
+  TH1F *h1_recoAK8pT_DoubleBTrig_np4_DB00_SD40_monitoring;
+  TH1F *h1_recoAK8pT_DoubleBTrig_np2_DB00_SD40_monitoring;
+  TH1F *h1_recoAK8pT_DoubleBTrig_np4_DB03_SD40_monitoring;
+  TH1F *h1_recoAK8pT_DoubleBTrig_np2_DB03_SD40_monitoring;
+  TH1F *h1_recoAK8pT_DoubleBTrig_np4_DB06_SD40_monitoring;
+  TH1F *h1_recoAK8pT_DoubleBTrig_np2_DB06_SD40_monitoring;
+  TH1F *h1_recoAK8pT_DoubleBTrig_np4_DB09_SD40_monitoring;
+  TH1F *h1_recoAK8pT_DoubleBTrig_np2_DB09_SD40_monitoring;
+  TH1F *h1_recoAK8pT_DoubleBTrig_np4_DB03Inv_SD40_monitoring;
+  TH1F *h1_recoAK8pT_DoubleBTrig_np2_DB03Inv_SD40_monitoring;
+
+  TH1F *h1_recoAK8pT_DoubleBTrig_np4_DB00_SD40_Mumonitoring;
+  TH1F *h1_recoAK8pT_DoubleBTrig_np2_DB00_SD40_Mumonitoring;
+  TH1F *h1_recoAK8pT_DoubleBTrig_np4_DB09_SD40_Mumonitoring;
+  TH1F *h1_recoAK8pT_DoubleBTrig_np2_DB09_SD40_Mumonitoring;
+
+  TH1F *h1_recoAK8pT_420JetTrigORDoubleB_DB00_SD40_monitoring;
+  TH1F *h1_recoAK8pT_420JetTrigORDoubleB_DB09_SD40_monitoring;
+  TH1F *h1_recoAK8pT_420JetTrigORDoubleB_DB00_SD40_Mumonitoring;
+  TH1F *h1_recoAK8pT_420JetTrigORDoubleB_DB09_SD40_Mumonitoring;
+
+  TH1F *h1_recoAK8pT_420JetTrig_DB00_SD40_monitoring;
+  TH1F *h1_recoAK8pT_420JetTrig_DB09_SD40_monitoring;
+  TH1F *h1_recoAK8pT_420JetTrig_DB00_SD40_Mumonitoring;
+  TH1F *h1_recoAK8pT_420JetTrig_DB09_SD40_Mumonitoring;
 
   TH1F *h1_recoAK8eta_DoubleBTrig_np4_monitoring;
   TH1F *h1_recoAK8eta_DoubleBTrig_np2_monitoring;
+
+  TH1F *h1_recoAK8eta_DoubleBTrig_np4_DB09_SD40_monitoring;
+  TH1F *h1_recoAK8eta_DoubleBTrig_np2_DB09_SD40_monitoring;
+
+  TH1F *h1_recoAK8eta_DoubleBTrig_np4_DB09_SD40_pT450_monitoring;
+  TH1F *h1_recoAK8eta_DoubleBTrig_np2_DB09_SD40_pT450_monitoring;
+
+  TH1F *h1_recoAK8eta_DoubleBTrig_np4_DB09_SD40_pT450_Mumonitoring;
+  TH1F *h1_recoAK8eta_DoubleBTrig_np2_DB09_SD40_pT450_Mumonitoring;
+
+  TH1F *h1_recoAK8phi_DoubleBTrig_np4_monitoring;
+  TH1F *h1_recoAK8phi_DoubleBTrig_np2_monitoring;
+
+  TH1F *h1_recoAK8phi_DoubleBTrig_np4_DB09_SD40_monitoring;
+  TH1F *h1_recoAK8phi_DoubleBTrig_np2_DB09_SD40_monitoring;
+
+  TH1F *h1_recoAK8phi_DoubleBTrig_np4_DB09_SD40_pT450_monitoring;
+  TH1F *h1_recoAK8phi_DoubleBTrig_np2_DB09_SD40_pT450_monitoring;
+
+  TH1F *h1_recoAK8phi_DoubleBTrig_np4_DB09_SD40_pT450_Mumonitoring;
+  TH1F *h1_recoAK8phi_DoubleBTrig_np2_DB09_SD40_pT450_Mumonitoring;
+
   TH1F *h1_recoAK8mass_DoubleBTrig_np4_monitoring;
   TH1F *h1_recoAK8mass_DoubleBTrig_np2_monitoring;
+
+  TH1F *h1_recoAK8DoubleB_DoubleBTrig_np4_SD40_monitoring;
+  TH1F *h1_recoAK8DoubleB_DoubleBTrig_np2_SD40_monitoring;
+  TH1F *h1_recoAK8MaxDoubleB_DoubleBTrig_np4_SD40_monitoring;
+  TH1F *h1_recoAK8MaxDoubleB_DoubleBTrig_np2_SD40_monitoring;
 
   TH1F *h1_recoAK8DoubleB_DoubleBTrig_np4_monitoring;
   TH1F *h1_recoAK8DoubleB_DoubleBTrig_np2_monitoring;
   TH1F *h1_recoAK8MaxDoubleB_DoubleBTrig_np4_monitoring;
   TH1F *h1_recoAK8MaxDoubleB_DoubleBTrig_np2_monitoring;
 
+  TH1F *h1_recoAK8DoubleB_DoubleBTrig_np4_pT450_monitoring;
+  TH1F *h1_recoAK8DoubleB_DoubleBTrig_np2_pT450_monitoring;
+
+  TH1F *h1_recoAK8DoubleB_CSVTrig_p17_monitoring;
+
   TH1F *h1_recoAK8pT_monitoring;
   TH1F *h1_recoAK8eta_monitoring;
+  TH1F *h1_recoAK8phi_monitoring;
   TH1F *h1_recoAK8mass_monitoring;
-  TH1F *h1_recoAK8pT_DB06_monitoring;
-  TH1F *h1_recoAK8pT_DB09_monitoring;
-  TH1F *h1_recoAK8pT_DB03Inv_monitoring;
+
+  TH1F *h1_recoAK8eta_DB09_SD40_monitoring;
+  TH1F *h1_recoAK8phi_DB09_SD40_monitoring;
+
+  TH1F *h1_recoAK8eta_DB09_SD40_pT450_monitoring;
+  TH1F *h1_recoAK8phi_DB09_SD40_pT450_monitoring;
+
+  TH1F *h1_recoAK8eta_DB09_SD40_pT450_Mumonitoring;
+  TH1F *h1_recoAK8phi_DB09_SD40_pT450_Mumonitoring;
+
+  TH1F *h1_recoAK8pT_DB00_SD40_monitoring;
+  TH1F *h1_recoAK8pT_DB03_SD40_monitoring;
+  TH1F *h1_recoAK8pT_DB06_SD40_monitoring;
+  TH1F *h1_recoAK8pT_DB09_SD40_monitoring;
+  TH1F *h1_recoAK8pT_DB03Inv_SD40_monitoring;
+
+  TH1F *h1_recoAK8pT_DB00_SD40_Mumonitoring;
+  TH1F *h1_recoAK8pT_DB09_SD40_Mumonitoring;
 
   TH1F *h1_recoAK8DoubleB_monitoring;
   TH1F *h1_recoAK8MaxDoubleB_monitoring;
+
+  TH1F *h1_recoAK8DoubleB_SD40_monitoring;
+  TH1F *h1_recoAK8MaxDoubleB_SD40_monitoring;
+
+  TH1F *h1_recoAK8DoubleB_pT450_monitoring;
+
+  TH1F* h1_recoAK8DoubleB_CSVTrig_p17_pT450_monitoring;
+
+  TH1F* h1_failingModule_DB09_SD40;
+  TH1F* h1_failingModule_DB00_SD40;
+  TH1F* h1_failingModule_DB09_SD40_Mu;
+  TH1F* h1_failingModule_DB00_SD40_Mu;
+  TH1F* h1_failingModule_DB09_SD40_pT450;
+  TH1F* h1_failingModule_DB09_SD40_pT450_Mu;
+  TH1F* h1_failingModule;
+  TH1F* h1_failingModule_Mu;
 
 };
 
@@ -120,38 +214,133 @@ DoubleBAnalyzer::DoubleBAnalyzer(const edm::ParameterSet& iConfig):
   recoJetLabel_            = consumes<std::vector<pat::Jet>>(iConfig.getParameter<edm::InputTag>("recoAK8Jets"));
   usesResource("TFileService");
 
+  const Int_t NBINS = 12;
+  Double_t pT_edges[NBINS + 1] = {275,300,325,350,375,400,425,450,500,550,600,675,800};
 
+  const Int_t NBINS_eta = 16;
+  Double_t eta_edges[NBINS_eta + 1] = {-2.4, -1.68, -1.44, -1.2, -0.96, -0.72, -0.48, -0.24, 0.0, 0.24, 0.48, 0.72, 0.96, 1.2, 1.44, 1.68, 2.4};
 
   TFileDirectory histoDir = fs->mkdir("histoDir");
 
-  h1_recoAK8pT_DoubleBTrig_np4_monitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np4", "recoAK8pT_DoubleBTrig_np4", 100, 0, 1000);
-  h1_recoAK8pT_DoubleBTrig_np2_monitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np2", "recoAK8pT_DoubleBTrig_np2", 100, 0, 1000);
-  h1_recoAK8pT_DoubleBTrig_np4_DB06_monitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np4_DB06", "recoAK8pT_DoubleBTrig_np4_DB06", 100, 0, 1000);
-  h1_recoAK8pT_DoubleBTrig_np2_DB06_monitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np2_DB06", "recoAK8pT_DoubleBTrig_np2_DB06", 100, 0, 1000);
-  h1_recoAK8pT_DoubleBTrig_np4_DB09_monitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np4_DB09", "recoAK8pT_DoubleBTrig_np4_DB09", 100, 0, 1000);
-  h1_recoAK8pT_DoubleBTrig_np2_DB09_monitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np2_DB09", "recoAK8pT_DoubleBTrig_np2_DB09", 100, 0, 1000);
-  h1_recoAK8pT_DoubleBTrig_np4_DB03Inv_monitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np4_DB03Inv", "recoAK8pT_DoubleBTrig_np4_DB03Inv", 100, 0, 1000);
-  h1_recoAK8pT_DoubleBTrig_np2_DB03Inv_monitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np2_DB03Inv", "recoAK8pT_DoubleBTrig_np2_DB03Inv", 100, 0, 1000);
+  h1_recoAK8pT_DoubleBTrig_np4_Mumonitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np4_Mu", "recoAK8pT_DoubleBTrig_np4_Mu", 100, 0, 1000);
 
-  h1_recoAK8eta_DoubleBTrig_np4_monitoring = histoDir.make<TH1F>("recoAK8eta_DoubleBTrig_np4", "recoAK8eta_DoubleBTrig_np4", 150, -5, 5);
-  h1_recoAK8eta_DoubleBTrig_np2_monitoring = histoDir.make<TH1F>("recoAK8eta_DoubleBTrig_np2", "recoAK8eta_DoubleBTrig_np2", 150, -5, 5);
+  h1_recoAK8pT_DoubleBTrig_np4_monitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np4", "recoAK8pT_DoubleBTrig_np4", 100, 0, 1000);
+
+  h1_recoAK8pT_DoubleBTrig_np2_monitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np2", "recoAK8pT_DoubleBTrig_np2", 100, 0, 1000);
+
+
+  h1_recoAK8pT_DoubleBTrig_np4_DB00_SD40_monitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np4_DB00_SD40", "recoAK8pT_DoubleBTrig_np4_DB00_SD40", NBINS, pT_edges);
+  h1_recoAK8pT_DoubleBTrig_np2_DB00_SD40_monitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np2_DB00_SD40", "recoAK8pT_DoubleBTrig_np2_DB00_SD40", NBINS, pT_edges);
+  h1_recoAK8pT_DoubleBTrig_np4_DB03_SD40_monitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np4_DB03_SD40", "recoAK8pT_DoubleBTrig_np4_DB03_SD40", 100, 0, 1000);
+  h1_recoAK8pT_DoubleBTrig_np2_DB03_SD40_monitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np2_DB03_SD40", "recoAK8pT_DoubleBTrig_np2_DB03_SD40", 100, 0, 1000);
+  h1_recoAK8pT_DoubleBTrig_np4_DB06_SD40_monitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np4_DB06_SD40", "recoAK8pT_DoubleBTrig_np4_DB06_SD40", 100, 0, 1000);
+  h1_recoAK8pT_DoubleBTrig_np2_DB06_SD40_monitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np2_DB06_SD40", "recoAK8pT_DoubleBTrig_np2_DB06_SD40", 100, 0, 1000);
+  h1_recoAK8pT_DoubleBTrig_np4_DB09_SD40_monitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np4_DB09_SD40", "recoAK8pT_DoubleBTrig_np4_DB09_SD40", NBINS, pT_edges);
+  h1_recoAK8pT_DoubleBTrig_np2_DB09_SD40_monitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np2_DB09_SD40", "recoAK8pT_DoubleBTrig_np2_DB09_SD40", NBINS, pT_edges);
+  h1_recoAK8pT_DoubleBTrig_np4_DB03Inv_SD40_monitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np4_DB03Inv_SD40", "recoAK8pT_DoubleBTrig_np4_DB03Inv_SD40", 100, 0, 1000);
+  h1_recoAK8pT_DoubleBTrig_np2_DB03Inv_SD40_monitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np2_DB03Inv_SD40", "recoAK8pT_DoubleBTrig_np2_DB03Inv_SD40", 100, 0, 1000);
+
+  h1_recoAK8pT_DoubleBTrig_np4_DB00_SD40_Mumonitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np4_DB00_SD40_Mu", "recoAK8pT_DoubleBTrig_np4_DB00_SD40_Mu", NBINS, pT_edges);
+  h1_recoAK8pT_DoubleBTrig_np2_DB00_SD40_Mumonitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np2_DB00_SD40_Mu", "recoAK8pT_DoubleBTrig_np2_DB00_SD40_Mu", NBINS, pT_edges);
+  h1_recoAK8pT_DoubleBTrig_np4_DB09_SD40_Mumonitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np4_DB09_SD40_Mu", "recoAK8pT_DoubleBTrig_np4_DB09_SD40_Mu", NBINS, pT_edges);
+  h1_recoAK8pT_DoubleBTrig_np2_DB09_SD40_Mumonitoring = histoDir.make<TH1F>("recoAK8pT_DoubleBTrig_np2_DB09_SD40_Mu", "recoAK8pT_DoubleBTrig_np2_DB09_SD40_Mu", NBINS, pT_edges);
+
+  h1_recoAK8pT_420JetTrigORDoubleB_DB00_SD40_monitoring = histoDir.make<TH1F>("recoAK8pT_420JetTrigORDoubleB_DB00_SD40", "recoAK8pT_420JetTrigORDoubleB_DB00_SD40", NBINS, pT_edges);
+  h1_recoAK8pT_420JetTrigORDoubleB_DB09_SD40_monitoring = histoDir.make<TH1F>("recoAK8pT_420JetTrigORDoubleB_DB09_SD40", "recoAK8pT_420JetTrigORDoubleB_DB09_SD40", NBINS, pT_edges);
+  h1_recoAK8pT_420JetTrigORDoubleB_DB00_SD40_Mumonitoring = histoDir.make<TH1F>("recoAK8pT_420JetTrigORDoubleB_DB00_SD40_Mu", "recoAK8pT_420JetTrigORDoubleB_DB00_SD40_Mu", NBINS, pT_edges);
+  h1_recoAK8pT_420JetTrigORDoubleB_DB09_SD40_Mumonitoring = histoDir.make<TH1F>("recoAK8pT_420JetTrigORDoubleB_DB09_SD40_Mu", "recoAK8pT_420JetTrigORDoubleB_DB09_SD40_Mu", NBINS, pT_edges);
+
+
+  h1_recoAK8pT_420JetTrig_DB00_SD40_monitoring = histoDir.make<TH1F>("recoAK8pT_420JetTrig_DB00_SD40", "recoAK8pT_420JetTrig_DB00_SD40", NBINS, pT_edges);
+  h1_recoAK8pT_420JetTrig_DB09_SD40_monitoring = histoDir.make<TH1F>("recoAK8pT_420JetTrig_DB09_SD40", "recoAK8pT_420JetTrig_DB09_SD40", NBINS, pT_edges);
+  h1_recoAK8pT_420JetTrig_DB00_SD40_Mumonitoring = histoDir.make<TH1F>("recoAK8pT_420JetTrig_DB00_SD40_Mu", "recoAK8pT_420JetTrig_DB00_SD40_Mu", NBINS, pT_edges);
+  h1_recoAK8pT_420JetTrig_DB09_SD40_Mumonitoring = histoDir.make<TH1F>("recoAK8pT_420JetTrig_DB09_SD40_Mu", "recoAK8pT_420JetTrig_DB09_SD40_Mu", NBINS, pT_edges);
+
+
+  h1_recoAK8eta_DoubleBTrig_np4_monitoring = histoDir.make<TH1F>("recoAK8eta_DoubleBTrig_np4", "recoAK8eta_DoubleBTrig_np4", NBINS_eta, eta_edges);
+  h1_recoAK8eta_DoubleBTrig_np2_monitoring = histoDir.make<TH1F>("recoAK8eta_DoubleBTrig_np2", "recoAK8eta_DoubleBTrig_np2", NBINS_eta, eta_edges);
+
+  h1_recoAK8eta_DoubleBTrig_np4_DB09_SD40_monitoring = histoDir.make<TH1F>("recoAK8eta_DoubleBTrig_np4_DB09_SD40", "recoAK8eta_DoubleBTrig_np4_DB09_SD40", NBINS_eta, eta_edges);
+  h1_recoAK8eta_DoubleBTrig_np2_DB09_SD40_monitoring = histoDir.make<TH1F>("recoAK8eta_DoubleBTrig_np2_DB09_SD40", "recoAK8eta_DoubleBTrig_np2_DB09_SD40", NBINS_eta, eta_edges);
+
+  h1_recoAK8eta_DoubleBTrig_np4_DB09_SD40_pT450_monitoring = histoDir.make<TH1F>("recoAK8eta_DoubleBTrig_np4_DB09_SD40_pT450", "recoAK8eta_DoubleBTrig_np4_DB09_SD40_pT450", NBINS_eta, eta_edges);
+  h1_recoAK8eta_DoubleBTrig_np2_DB09_SD40_pT450_monitoring = histoDir.make<TH1F>("recoAK8eta_DoubleBTrig_np2_DB09_SD40_pT450", "recoAK8eta_DoubleBTrig_np2_DB09_SD40_pT450", NBINS_eta, eta_edges);
+
+  h1_recoAK8eta_DoubleBTrig_np4_DB09_SD40_pT450_Mumonitoring = histoDir.make<TH1F>("recoAK8eta_DoubleBTrig_np4_DB09_SD40_pT450_Mu", "recoAK8eta_DoubleBTrig_np4_DB09_SD40_pT450_Mu", NBINS_eta, eta_edges);
+  h1_recoAK8eta_DoubleBTrig_np2_DB09_SD40_pT450_Mumonitoring = histoDir.make<TH1F>("recoAK8eta_DoubleBTrig_np2_DB09_SD40_pT450_Mu", "recoAK8eta_DoubleBTrig_np2_DB09_SD40_pT450_Mu", NBINS_eta, eta_edges);
+
+  h1_recoAK8phi_DoubleBTrig_np4_monitoring = histoDir.make<TH1F>("recoAK8phi_DoubleBTrig_np4", "recoAK8phi_DoubleBTrig_np4", 12, -TMath::Pi(), TMath::Pi());
+  h1_recoAK8phi_DoubleBTrig_np2_monitoring = histoDir.make<TH1F>("recoAK8phi_DoubleBTrig_np2", "recoAK8phi_DoubleBTrig_np2", 12, -TMath::Pi(), TMath::Pi());
+
+  h1_recoAK8phi_DoubleBTrig_np4_DB09_SD40_monitoring = histoDir.make<TH1F>("recoAK8phi_DoubleBTrig_np4_DB09_SD40", "recoAK8phi_DoubleBTrig_np4_DB09_SD40", 12, -TMath::Pi(), TMath::Pi());
+  h1_recoAK8phi_DoubleBTrig_np2_DB09_SD40_monitoring = histoDir.make<TH1F>("recoAK8phi_DoubleBTrig_np2_DB09_SD40", "recoAK8phi_DoubleBTrig_np2_DB09_SD40", 12, -TMath::Pi(), TMath::Pi());
+
+  h1_recoAK8phi_DoubleBTrig_np4_DB09_SD40_pT450_monitoring = histoDir.make<TH1F>("recoAK8phi_DoubleBTrig_np4_DB09_SD40_pT450", "recoAK8phi_DoubleBTrig_np4_DB09_SD40_pT450", 12, -TMath::Pi(), TMath::Pi());
+  h1_recoAK8phi_DoubleBTrig_np2_DB09_SD40_pT450_monitoring = histoDir.make<TH1F>("recoAK8phi_DoubleBTrig_np2_DB09_SD40_pT450", "recoAK8phi_DoubleBTrig_np2_DB09_SD40_pT450", 12, -TMath::Pi(), TMath::Pi());
+
+  h1_recoAK8phi_DoubleBTrig_np4_DB09_SD40_pT450_Mumonitoring = histoDir.make<TH1F>("recoAK8phi_DoubleBTrig_np4_DB09_SD40_pT450_Mu", "recoAK8phi_DoubleBTrig_np4_DB09_SD40_pT450_Mu", 12, -TMath::Pi(), TMath::Pi());
+  h1_recoAK8phi_DoubleBTrig_np2_DB09_SD40_pT450_Mumonitoring = histoDir.make<TH1F>("recoAK8phi_DoubleBTrig_np2_DB09_SD40_pT450_Mu", "recoAK8phi_DoubleBTrig_np2_DB09_SD40_pT450_Mu", 12, -TMath::Pi(), TMath::Pi());
+
   h1_recoAK8mass_DoubleBTrig_np4_monitoring = histoDir.make<TH1F>("recoAK8mass_DoubleBTrig_np4", "recoAK8mass_DoubleBTrig_np4", 150, 0, 500);
   h1_recoAK8mass_DoubleBTrig_np2_monitoring = histoDir.make<TH1F>("recoAK8mass_DoubleBTrig_np2", "recoAK8mass_DoubleBTrig_np2", 150, 0, 500);
+
+  h1_recoAK8DoubleB_DoubleBTrig_np4_SD40_monitoring = histoDir.make<TH1F>("recoAK8DoubleB_DoubleBTrig_np4_SD40", "recoAK8DoubleB_DoubleBTrig_np4_SD40", 50, -1, 1);
+  h1_recoAK8DoubleB_DoubleBTrig_np2_SD40_monitoring = histoDir.make<TH1F>("recoAK8DoubleB_DoubleBTrig_np2_SD40", "recoAK8DoubleB_DoubleBTrig_np2_SD40", 50, -1, 1);
+  h1_recoAK8MaxDoubleB_DoubleBTrig_np4_SD40_monitoring = histoDir.make<TH1F>("recoAK8MaxDoubleB_DoubleBTrig_np4_SD40", "recoAK8MaxDoubleB_DoubleBTrig_np4_SD40", 50, -1, 1);
+  h1_recoAK8MaxDoubleB_DoubleBTrig_np2_SD40_monitoring = histoDir.make<TH1F>("recoAK8MaxDoubleB_DoubleBTrig_np2_SD40", "recoAK8MaxDoubleB_DoubleBTrig_np2_SD40", 50, -1, 1);
+
+  h1_recoAK8DoubleB_CSVTrig_p17_monitoring = histoDir.make<TH1F>("recoAK8DoubleB_CSVTrig_p17", "recoAK8DoubleB_CSVTrig_p17", 50, -1, 1);
 
   h1_recoAK8DoubleB_DoubleBTrig_np4_monitoring = histoDir.make<TH1F>("recoAK8DoubleB_DoubleBTrig_np4", "recoAK8DoubleB_DoubleBTrig_np4", 50, -1, 1);
   h1_recoAK8DoubleB_DoubleBTrig_np2_monitoring = histoDir.make<TH1F>("recoAK8DoubleB_DoubleBTrig_np2", "recoAK8DoubleB_DoubleBTrig_np2", 50, -1, 1);
   h1_recoAK8MaxDoubleB_DoubleBTrig_np4_monitoring = histoDir.make<TH1F>("recoAK8MaxDoubleB_DoubleBTrig_np4", "recoAK8MaxDoubleB_DoubleBTrig_np4", 50, -1, 1);
   h1_recoAK8MaxDoubleB_DoubleBTrig_np2_monitoring = histoDir.make<TH1F>("recoAK8MaxDoubleB_DoubleBTrig_np2", "recoAK8MaxDoubleB_DoubleBTrig_np2", 50, -1, 1);
 
+  h1_recoAK8DoubleB_DoubleBTrig_np4_pT450_monitoring = histoDir.make<TH1F>("recoAK8DoubleB_DoubleBTrig_np4_pT450", "recoAK8DoubleB_DoubleBTrig_np4_pT450", 50, -1, 1);
+  h1_recoAK8DoubleB_DoubleBTrig_np2_pT450_monitoring = histoDir.make<TH1F>("recoAK8DoubleB_DoubleBTrig_np2_pT450", "recoAK8DoubleB_DoubleBTrig_np2_pT450", 50, -1, 1);
+
   h1_recoAK8pT_monitoring = histoDir.make<TH1F>("recoAK8pT", "recoAK8pT", 100, 0, 1000);
-  h1_recoAK8eta_monitoring = histoDir.make<TH1F>("recoAK8eta", "recoAK8eta", 150, -5, 5);
+  h1_recoAK8eta_monitoring = histoDir.make<TH1F>("recoAK8eta", "recoAK8eta", NBINS_eta, eta_edges);
+  h1_recoAK8phi_monitoring = histoDir.make<TH1F>("recoAK8phi", "recoAK8phi", 12, -TMath::Pi(), TMath::Pi());
   h1_recoAK8mass_monitoring = histoDir.make<TH1F>("recoAK8mass", "recoAK8mass", 150, 0, 500);
-  h1_recoAK8pT_DB06_monitoring = histoDir.make<TH1F>("recoAK8pT_DB06", "recoAK8pT_DB06", 100, 0, 1000);
-  h1_recoAK8pT_DB09_monitoring = histoDir.make<TH1F>("recoAK8pT_DB09", "recoAK8pT_DB09", 100, 0, 1000);
-  h1_recoAK8pT_DB03Inv_monitoring = histoDir.make<TH1F>("recoAK8pT_DB03Inv", "recoAK8pT_DB03Inv", 100, 0, 1000);
+
+  h1_recoAK8eta_DB09_SD40_monitoring = histoDir.make<TH1F>("recoAK8eta_DB09_SD40", "recoAK8eta_DB09_SD40", NBINS_eta, eta_edges);
+  h1_recoAK8phi_DB09_SD40_monitoring = histoDir.make<TH1F>("recoAK8phi_DB09_SD40", "recoAK8phi_DB09_SD40", 12, -TMath::Pi(), TMath::Pi());
+
+  h1_recoAK8eta_DB09_SD40_pT450_monitoring = histoDir.make<TH1F>("recoAK8eta_DB09_SD40_pT450", "recoAK8eta_DB09_SD40_pT450", NBINS_eta, eta_edges);
+  h1_recoAK8phi_DB09_SD40_pT450_monitoring = histoDir.make<TH1F>("recoAK8phi_DB09_SD40_pT450", "recoAK8phi_DB09_SD40_pT450", 12, -TMath::Pi(), TMath::Pi());
+
+  h1_recoAK8eta_DB09_SD40_pT450_Mumonitoring = histoDir.make<TH1F>("recoAK8eta_DB09_SD40_pT450_Mu", "recoAK8eta_DB09_SD40_pT450_Mu", NBINS_eta, eta_edges);
+  h1_recoAK8phi_DB09_SD40_pT450_Mumonitoring = histoDir.make<TH1F>("recoAK8phi_DB09_SD40_pT450_Mu", "recoAK8phi_DB09_SD40_pT450_Mu", 12, -TMath::Pi(), TMath::Pi());
+
+  h1_recoAK8pT_DB00_SD40_monitoring = histoDir.make<TH1F>("recoAK8pT_DB00_SD40", "recoAK8pT_DB00_SD40", NBINS, pT_edges);
+  h1_recoAK8pT_DB03_SD40_monitoring = histoDir.make<TH1F>("recoAK8pT_DB03_SD40", "recoAK8pT_DB03_SD40", 100, 0, 1000);
+  h1_recoAK8pT_DB06_SD40_monitoring = histoDir.make<TH1F>("recoAK8pT_DB06_SD40", "recoAK8pT_DB06_SD40", 100, 0, 1000);
+  h1_recoAK8pT_DB09_SD40_monitoring = histoDir.make<TH1F>("recoAK8pT_DB09_SD40", "recoAK8pT_DB09_SD40", NBINS, pT_edges);
+  h1_recoAK8pT_DB03Inv_SD40_monitoring = histoDir.make<TH1F>("recoAK8pT_DB03Inv_SD40", "recoAK8pT_DB03Inv_SD40", 100, 0, 1000);
+
+  h1_recoAK8pT_DB00_SD40_Mumonitoring = histoDir.make<TH1F>("recoAK8pT_DB00_SD40_Mu", "recoAK8pT_DB00_SD40_Mu", NBINS, pT_edges);
+  h1_recoAK8pT_DB09_SD40_Mumonitoring = histoDir.make<TH1F>("recoAK8pT_DB09_SD40_Mu", "recoAK8pT_DB09_SD40_Mu", NBINS, pT_edges);
+
+
+  h1_recoAK8DoubleB_SD40_monitoring = histoDir.make<TH1F>("recoAK8DoubleB_SD40", "recoAK8DoubleB_SD40", 50, -1, 1);
+  h1_recoAK8MaxDoubleB_SD40_monitoring = histoDir.make<TH1F>("recoAK8MaxDoubleB_SD40", "recoAK8MaxDoubleB_SD40", 50, -1, 1);
 
   h1_recoAK8DoubleB_monitoring = histoDir.make<TH1F>("recoAK8DoubleB", "recoAK8DoubleB", 50, -1, 1);
   h1_recoAK8MaxDoubleB_monitoring = histoDir.make<TH1F>("recoAK8MaxDoubleB", "recoAK8MaxDoubleB", 50, -1, 1);
+
+  h1_recoAK8DoubleB_pT450_monitoring = histoDir.make<TH1F>("recoAK8DoubleB_pT450", "recoAK8DoubleB_pT450", 50, -1, 1);
+
+  h1_recoAK8DoubleB_CSVTrig_p17_pT450_monitoring = histoDir.make<TH1F>("recoAK8DoubleB_CSVTrig_pT450", "recoAK8DoubleB_CSVTrig_pT450", 50, -1, 1);
+
+  h1_failingModule_DB09_SD40 = histoDir.make<TH1F>("failingModule_DB09_SD40", "failingModule_DB09_SD40", 290, -0.5, 289.5); 
+  h1_failingModule_DB00_SD40 = histoDir.make<TH1F>("failingModule_DB00_SD40", "failingModule_DB00_SD40", 290, -0.5, 289.5);
+  h1_failingModule_DB09_SD40_Mu = histoDir.make<TH1F>("failingModule_DB09_SD40_Mu", "failingModule_DB09_SD40_Mu", 290, -0.5, 289.5);
+  h1_failingModule_DB00_SD40_Mu = histoDir.make<TH1F>("failingModule_DB00_SD40_Mu", "failingModule_DB00_SD40_Mu", 290, -0.5, 289.5);
+  h1_failingModule_DB09_SD40_pT450 = histoDir.make<TH1F>("failingModule_DB09_SD40_pT450", "failingModule_DB09_SD40_pT450", 290, -0.5, 289.5);
+  h1_failingModule_DB09_SD40_pT450_Mu = histoDir.make<TH1F>("failingModule_DB09_SD40_pT450_Mu", "failingModule_DB09_SD40_pT450_Mu", 290, -0.5, 289.5);
+  h1_failingModule = histoDir.make<TH1F>("failingModule", "failingModule", 290, -0.5, 289.5);
+  h1_failingModule_Mu = histoDir.make<TH1F>("failingModule_Mu", "failingModule_Mu", 290, -0.5, 289.5);
 
 }
 
@@ -170,9 +359,15 @@ DoubleBAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    using namespace edm;
    passDoubleBTrig_np4=99;
    passDoubleBTrig_np2=99;
-   passMonitorAK8260Trig=99;
+   passCSVTrig_p17=99;
+   passMonitorAK8200Trig=99;
    passMonitorAK8360Trig=99;
- 
+   passMonitorAK8420Trig=99;
+   passMonitorAK8jetTrig=99;
+   passMonitorMuTrig=99;
+
+   failingModule=-99;
+
    recoAK8pT=0.0;
    recoAK8eta=-5.;
    recoAK8SDmass=0.0;
@@ -192,25 +387,46 @@ DoubleBAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
    for (size_t i = 0; i < trgNames.size(); ++i) {
      const std::string &name = trgNames.triggerName(i);
-     std::cout << "trigger name: " << name << std::endl;
+//     std::cout << "trigger name: " << name << std::endl;
    
      if ( (name.find("HLT_AK8PFJet330_TrimMass30_PFAK8BoostedDoubleB_np4_v") != std::string::npos )) {
        passDoubleBTrig_np4=trgResultsHandle->accept(i);
+	 std::cout << "i: " << i << std::endl;
+	 std::cout << "trgResultsHandle->accept(i): " << trgResultsHandle->accept(i) << std::endl;
+       if(!passDoubleBTrig_np4){
+	 failingModule=trgResultsHandle->index(i); 
+       }
      }
      if ( (name.find("HLT_AK8PFJet330_TrimMass30_PFAK8BoostedDoubleB_np2_v") != std::string::npos )) {
        passDoubleBTrig_np2=trgResultsHandle->accept(i);
      }
-     if ( (name.find("HLT_AK8PFJet260_v") != std::string::npos )) {
-       passMonitorAK8260Trig=trgResultsHandle->accept(i);
+     if ( (name.find("HLT_AK8PFJet330_TrimMass30_PFAK8BTagDeepCSV_p17_v") != std::string::npos )) {
+       passCSVTrig_p17=trgResultsHandle->accept(i);
      }
-     if ( (name.find("HLT_AK8PFJet360_TrimMass30_v") != std::string::npos )) {
-       passMonitorAK8360Trig=trgResultsHandle->accept(i);
+     if ( (name.find("HLT_AK8PFJet200_v") != std::string::npos )) {
+       passMonitorAK8200Trig=trgResultsHandle->accept(i);
+     }
+     if ( (name.find("HLT_IsoMu30_v") != std::string::npos )) {
+       passMonitorMuTrig=trgResultsHandle->accept(i);
+     }
+     if ( (name.find("HLT_AK8PFJet360_TrimMass30_v") != std::string::npos ) || (name.find("HLT_AK8PFJet380_TrimMass30_v") != std::string::npos ) || (name.find("HLT_AK8PFJet400_TrimMass30_v") != std::string::npos ) || (name.find("HLT_AK8PFJet420_TrimMass30_v") != std::string::npos )) {
+       if (passMonitorAK8jetTrig == 99){
+	passMonitorAK8jetTrig=trgResultsHandle->accept(i);
+       }else if(passMonitorAK8jetTrig == 0){
+        passMonitorAK8jetTrig=trgResultsHandle->accept(i);
+       }
+     }
+     if ( (name.find("HLT_AK8PFJet420_TrimMass30_v") != std::string::npos ) ){
+	passMonitorAK8420Trig=trgResultsHandle->accept(i);
      }
      
    }
+   passMonitorAK8360Trig=passMonitorAK8jetTrig;
    
    
-   edm::Handle<pat::JetCollection> recoJetHandle;
+//   edm::Handle<pat::JetCollection> recoJetHandle;
+//   iEvent.getByToken(recoJetLabel_, recoJetHandle);
+   edm::Handle<std::vector<pat::Jet>> recoJetHandle;
    iEvent.getByToken(recoJetLabel_, recoJetHandle);
    if (!recoJetHandle.isValid()) {
      std::cout << "Error in getting slimmedJetsAK8 product from Event!" << std::endl;
@@ -229,6 +445,7 @@ DoubleBAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
      TLorentzVector AK8jet(0., 0., 0., 0.);
      AK8jet.SetPtEtaPhiM(jet.pt(), jet.eta(), jet.phi(), jet.mass());
      AK8jets.push_back(AK8jet);
+//     std::cout << "jet.pt(): " << jet.pt() << std::endl;
      for( const std::string &bDiscr : bDiscriminators_ ){
 //      std::cout << "bDiscriminator: " << bDiscr << " "  << jet.bDiscriminator(bDiscr) << std::endl;
       if(bDiscr == "pfBoostedDoubleSecondaryVertexAK8BJetTags"){
@@ -240,74 +457,227 @@ DoubleBAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       }
      }
    }
- /*  if (recoJetHandle->size() > 0){     
-     TLorentzVector wj1, wj2, wdijet;
-     TLorentzVector wj1_tmp, wj2_tmp;
-     const pat::Jet & iCj = (*recoJetHandle)[ 0 ];
-     recoAK8pT = iCj.pt();
-     recoAK8eta = iCj.eta();
-     recoAK8mass = iCj.mass();
-   } // end of RECO jets.*/
 
    if (AK8jets.size() > 0){   
-     if (passDoubleBTrig_np4 && passMonitorAK8260Trig) {
+     if (passDoubleBTrig_np4 && passMonitorMuTrig) {
+       h1_recoAK8pT_DoubleBTrig_np4_Mumonitoring->Fill(AK8jets.at(0).Pt());
+     }
+
+     if (passDoubleBTrig_np4 && passMonitorAK8200Trig) {
        h1_recoAK8pT_DoubleBTrig_np4_monitoring->Fill(AK8jets.at(0).Pt());
-       h1_recoAK8eta_DoubleBTrig_np4_monitoring->Fill(AK8jets.at(0).Eta());
        h1_recoAK8mass_DoubleBTrig_np4_monitoring->Fill(recoAK8SDmasses.at(0));
      }
-     if (passDoubleBTrig_np2 && passMonitorAK8260Trig) {
+     if (passDoubleBTrig_np2 && passMonitorAK8200Trig) {
        h1_recoAK8pT_DoubleBTrig_np2_monitoring->Fill(AK8jets.at(0).Pt());
        h1_recoAK8eta_DoubleBTrig_np2_monitoring->Fill(AK8jets.at(0).Eta());
+       h1_recoAK8phi_DoubleBTrig_np2_monitoring->Fill(AK8jets.at(0).Phi());
        h1_recoAK8mass_DoubleBTrig_np2_monitoring->Fill(recoAK8SDmasses.at(0));
      }
 
-     if (passDoubleBTrig_np4 && passMonitorAK8260Trig && recoAK8DoubleBs.at(0)>0.6) {
-       h1_recoAK8pT_DoubleBTrig_np4_DB06_monitoring->Fill(AK8jets.at(0).Pt());
+     if (passDoubleBTrig_np4 && passMonitorAK8200Trig && recoAK8DoubleBs.at(0)>0.0 && recoAK8SDmasses.at(0)>40) {
+       h1_recoAK8pT_DoubleBTrig_np4_DB00_SD40_monitoring->Fill(AK8jets.at(0).Pt());
      }
-     if (passDoubleBTrig_np2 && passMonitorAK8260Trig && recoAK8DoubleBs.at(0)>0.6) {
-       h1_recoAK8pT_DoubleBTrig_np2_DB06_monitoring->Fill(AK8jets.at(0).Pt());
+     if (passDoubleBTrig_np2 && passMonitorAK8200Trig && recoAK8DoubleBs.at(0)>0.0 && recoAK8SDmasses.at(0)>40) {
+       h1_recoAK8pT_DoubleBTrig_np2_DB00_SD40_monitoring->Fill(AK8jets.at(0).Pt());
      }
-     if (passDoubleBTrig_np4 && passMonitorAK8260Trig && recoAK8DoubleBs.at(0)>0.9) {
-       h1_recoAK8pT_DoubleBTrig_np4_DB09_monitoring->Fill(AK8jets.at(0).Pt());
+     if (passDoubleBTrig_np4 && passMonitorAK8200Trig && recoAK8DoubleBs.at(0)>0.3 && recoAK8SDmasses.at(0)>40) {
+       h1_recoAK8pT_DoubleBTrig_np4_DB03_SD40_monitoring->Fill(AK8jets.at(0).Pt());
      }
-     if (passDoubleBTrig_np2 && passMonitorAK8260Trig && recoAK8DoubleBs.at(0)>0.9) {
-       h1_recoAK8pT_DoubleBTrig_np2_DB09_monitoring->Fill(AK8jets.at(0).Pt());
+     if (passDoubleBTrig_np2 && passMonitorAK8200Trig && recoAK8DoubleBs.at(0)>0.3 && recoAK8SDmasses.at(0)>40) {
+       h1_recoAK8pT_DoubleBTrig_np2_DB03_SD40_monitoring->Fill(AK8jets.at(0).Pt());
      }
-     if (passDoubleBTrig_np4 && passMonitorAK8260Trig && recoAK8DoubleBs.at(0)<0.3) {
-       h1_recoAK8pT_DoubleBTrig_np4_DB03Inv_monitoring->Fill(AK8jets.at(0).Pt());
+     if (passDoubleBTrig_np4 && passMonitorAK8200Trig && recoAK8DoubleBs.at(0)>0.6 && recoAK8SDmasses.at(0)>40) {
+       h1_recoAK8pT_DoubleBTrig_np4_DB06_SD40_monitoring->Fill(AK8jets.at(0).Pt());
      }
-     if (passDoubleBTrig_np2 && passMonitorAK8260Trig && recoAK8DoubleBs.at(0)<0.3) {
-       h1_recoAK8pT_DoubleBTrig_np2_DB03Inv_monitoring->Fill(AK8jets.at(0).Pt());
+     if (passDoubleBTrig_np2 && passMonitorAK8200Trig && recoAK8DoubleBs.at(0)>0.6 && recoAK8SDmasses.at(0)>40) {
+       h1_recoAK8pT_DoubleBTrig_np2_DB06_SD40_monitoring->Fill(AK8jets.at(0).Pt());
+     }
+     if (passDoubleBTrig_np4 && passMonitorAK8200Trig && recoAK8DoubleBs.at(0)>0.9 && recoAK8SDmasses.at(0)>40) {
+       h1_recoAK8pT_DoubleBTrig_np4_DB09_SD40_monitoring->Fill(AK8jets.at(0).Pt());
+       h1_recoAK8eta_DoubleBTrig_np4_DB09_SD40_monitoring->Fill(AK8jets.at(0).Eta());
+       h1_recoAK8phi_DoubleBTrig_np4_DB09_SD40_monitoring->Fill(AK8jets.at(0).Phi());
+     }
+     if (passDoubleBTrig_np2 && passMonitorAK8200Trig && recoAK8DoubleBs.at(0)>0.9 && recoAK8SDmasses.at(0)>40) {
+       h1_recoAK8pT_DoubleBTrig_np2_DB09_SD40_monitoring->Fill(AK8jets.at(0).Pt());
+       h1_recoAK8eta_DoubleBTrig_np2_DB09_SD40_monitoring->Fill(AK8jets.at(0).Phi());
+       h1_recoAK8phi_DoubleBTrig_np2_DB09_SD40_monitoring->Fill(AK8jets.at(0).Eta());
      }
 
-     if (passMonitorAK8260Trig) {
+
+
+     if (passDoubleBTrig_np4 && passMonitorMuTrig && recoAK8DoubleBs.at(0)>0.0 && recoAK8SDmasses.at(0)>40) {
+       h1_recoAK8pT_DoubleBTrig_np4_DB00_SD40_Mumonitoring->Fill(AK8jets.at(0).Pt());
+     }
+     if (passDoubleBTrig_np2 && passMonitorMuTrig && recoAK8DoubleBs.at(0)>0.0 && recoAK8SDmasses.at(0)>40) {
+       h1_recoAK8pT_DoubleBTrig_np2_DB00_SD40_Mumonitoring->Fill(AK8jets.at(0).Pt());
+     }
+     if (passDoubleBTrig_np4 && passMonitorMuTrig && recoAK8DoubleBs.at(0)>0.9 && recoAK8SDmasses.at(0)>40) {
+       h1_recoAK8pT_DoubleBTrig_np4_DB09_SD40_Mumonitoring->Fill(AK8jets.at(0).Pt());
+     }
+     if (passDoubleBTrig_np2 && passMonitorMuTrig && recoAK8DoubleBs.at(0)>0.9 && recoAK8SDmasses.at(0)>40) {
+       h1_recoAK8pT_DoubleBTrig_np2_DB09_SD40_Mumonitoring->Fill(AK8jets.at(0).Pt());
+     }
+
+
+     if ((passMonitorAK8420Trig||passDoubleBTrig_np4) && passMonitorAK8200Trig && recoAK8DoubleBs.at(0)>0.0 && recoAK8SDmasses.at(0)>40) {
+       h1_recoAK8pT_420JetTrigORDoubleB_DB00_SD40_monitoring->Fill(AK8jets.at(0).Pt());
+     }
+     if ((passMonitorAK8420Trig||passDoubleBTrig_np4) && passMonitorAK8200Trig && recoAK8DoubleBs.at(0)>0.9 && recoAK8SDmasses.at(0)>40) {
+       h1_recoAK8pT_420JetTrigORDoubleB_DB09_SD40_monitoring->Fill(AK8jets.at(0).Pt());
+     }
+     if ((passMonitorAK8420Trig||passDoubleBTrig_np4) && passMonitorMuTrig && recoAK8DoubleBs.at(0)>0.0 && recoAK8SDmasses.at(0)>40) {
+       h1_recoAK8pT_420JetTrigORDoubleB_DB00_SD40_Mumonitoring->Fill(AK8jets.at(0).Pt());
+     }
+     if ((passMonitorAK8420Trig||passDoubleBTrig_np4) && passMonitorMuTrig && recoAK8DoubleBs.at(0)>0.9 && recoAK8SDmasses.at(0)>40) {
+       h1_recoAK8pT_420JetTrigORDoubleB_DB09_SD40_Mumonitoring->Fill(AK8jets.at(0).Pt());
+     }
+
+
+     if (passMonitorAK8420Trig && passMonitorAK8200Trig && recoAK8DoubleBs.at(0)>0.0 && recoAK8SDmasses.at(0)>40) {
+       h1_recoAK8pT_420JetTrig_DB00_SD40_monitoring->Fill(AK8jets.at(0).Pt());
+     }
+     if (passMonitorAK8420Trig && passMonitorAK8200Trig && recoAK8DoubleBs.at(0)>0.9 && recoAK8SDmasses.at(0)>40) {
+       h1_recoAK8pT_420JetTrig_DB09_SD40_monitoring->Fill(AK8jets.at(0).Pt());
+     }
+     if (passMonitorAK8420Trig && passMonitorMuTrig && recoAK8DoubleBs.at(0)>0.0 && recoAK8SDmasses.at(0)>40) {
+       h1_recoAK8pT_420JetTrig_DB00_SD40_Mumonitoring->Fill(AK8jets.at(0).Pt());
+     }
+     if (passMonitorAK8420Trig && passMonitorMuTrig && recoAK8DoubleBs.at(0)>0.9 && recoAK8SDmasses.at(0)>40) {
+       h1_recoAK8pT_420JetTrig_DB09_SD40_Mumonitoring->Fill(AK8jets.at(0).Pt());
+     }
+
+
+
+     if (passDoubleBTrig_np4 && passMonitorAK8200Trig && recoAK8DoubleBs.at(0)>0.9 && recoAK8SDmasses.at(0)>40 && AK8jets.at(0).Pt() > 450) {
+       h1_recoAK8eta_DoubleBTrig_np4_DB09_SD40_pT450_monitoring->Fill(AK8jets.at(0).Eta());
+       h1_recoAK8phi_DoubleBTrig_np4_DB09_SD40_pT450_monitoring->Fill(AK8jets.at(0).Phi());
+     }
+     if (passDoubleBTrig_np2 && passMonitorAK8200Trig && recoAK8DoubleBs.at(0)>0.9 && recoAK8SDmasses.at(0)>40 && AK8jets.at(0).Pt() > 450) {
+       h1_recoAK8eta_DoubleBTrig_np2_DB09_SD40_pT450_monitoring->Fill(AK8jets.at(0).Eta());
+       h1_recoAK8phi_DoubleBTrig_np2_DB09_SD40_pT450_monitoring->Fill(AK8jets.at(0).Phi());
+     }
+
+
+     if (passDoubleBTrig_np4 && passMonitorMuTrig && recoAK8DoubleBs.at(0)>0.9 && recoAK8SDmasses.at(0)>40 && AK8jets.at(0).Pt() > 450) {
+       h1_recoAK8eta_DoubleBTrig_np4_DB09_SD40_pT450_Mumonitoring->Fill(AK8jets.at(0).Eta());
+       h1_recoAK8phi_DoubleBTrig_np4_DB09_SD40_pT450_Mumonitoring->Fill(AK8jets.at(0).Phi());
+     }
+     if (passDoubleBTrig_np2 && passMonitorMuTrig && recoAK8DoubleBs.at(0)>0.9 && recoAK8SDmasses.at(0)>40 && AK8jets.at(0).Pt() > 450) {
+       h1_recoAK8eta_DoubleBTrig_np2_DB09_SD40_pT450_Mumonitoring->Fill(AK8jets.at(0).Eta());
+       h1_recoAK8phi_DoubleBTrig_np2_DB09_SD40_pT450_Mumonitoring->Fill(AK8jets.at(0).Phi());
+     }
+
+
+
+     if (passDoubleBTrig_np4 && passMonitorAK8200Trig && recoAK8DoubleBs.at(0)<0.3 && recoAK8SDmasses.at(0)>40) {
+       h1_recoAK8pT_DoubleBTrig_np4_DB03Inv_SD40_monitoring->Fill(AK8jets.at(0).Pt());
+     }
+     if (passDoubleBTrig_np2 && passMonitorAK8200Trig && recoAK8DoubleBs.at(0)<0.3 && recoAK8SDmasses.at(0)>40) {
+       h1_recoAK8pT_DoubleBTrig_np2_DB03Inv_SD40_monitoring->Fill(AK8jets.at(0).Pt());
+     }
+
+     if (passMonitorAK8200Trig) {
+       h1_failingModule->Fill(failingModule);
        h1_recoAK8pT_monitoring->Fill(AK8jets.at(0).Pt());
-       h1_recoAK8eta_monitoring->Fill(AK8jets.at(0).Eta());
        h1_recoAK8mass_monitoring->Fill(recoAK8SDmasses.at(0));
      }
-     if (passMonitorAK8260Trig && recoAK8DoubleBs.at(0)>0.6) {
-       h1_recoAK8pT_DB06_monitoring->Fill(AK8jets.at(0).Pt());
-     }
-     if (passMonitorAK8260Trig && recoAK8DoubleBs.at(0)>0.9) {
-       h1_recoAK8pT_DB09_monitoring->Fill(AK8jets.at(0).Pt());
-     }
-     if (passMonitorAK8260Trig && recoAK8DoubleBs.at(0)<0.3) {
-       h1_recoAK8pT_DB03Inv_monitoring->Fill(AK8jets.at(0).Pt());
+
+     if (passMonitorMuTrig) {
+       h1_failingModule_Mu->Fill(failingModule);
      }
 
+
+     if (passMonitorAK8200Trig && recoAK8DoubleBs.at(0)>0.0 && recoAK8SDmasses.at(0) > 40) {
+       h1_failingModule_DB00_SD40->Fill(failingModule);
+       h1_recoAK8pT_DB00_SD40_monitoring->Fill(AK8jets.at(0).Pt());
+     }
+     if (passMonitorAK8200Trig && recoAK8DoubleBs.at(0)>0.3 && recoAK8SDmasses.at(0) > 40) {
+       h1_recoAK8pT_DB03_SD40_monitoring->Fill(AK8jets.at(0).Pt());
+     }
+     if (passMonitorAK8200Trig && recoAK8DoubleBs.at(0)>0.6 && recoAK8SDmasses.at(0) > 40) {
+       h1_recoAK8pT_DB06_SD40_monitoring->Fill(AK8jets.at(0).Pt());
+     }
+     if (passMonitorAK8200Trig && recoAK8DoubleBs.at(0)>0.9 && recoAK8SDmasses.at(0) > 40) {
+       h1_failingModule_DB09_SD40->Fill(failingModule);
+       h1_recoAK8pT_DB09_SD40_monitoring->Fill(AK8jets.at(0).Pt());
+       h1_recoAK8eta_DB09_SD40_monitoring->Fill(AK8jets.at(0).Eta());
+       h1_recoAK8phi_DB09_SD40_monitoring->Fill(AK8jets.at(0).Phi());
+     }
+     if (passMonitorAK8200Trig && recoAK8DoubleBs.at(0)>0.9 && recoAK8SDmasses.at(0) > 40 && AK8jets.at(0).Pt() > 450) {
+       h1_failingModule_DB09_SD40_pT450->Fill(failingModule);
+       h1_recoAK8eta_DB09_SD40_pT450_monitoring->Fill(AK8jets.at(0).Eta());
+       h1_recoAK8phi_DB09_SD40_pT450_monitoring->Fill(AK8jets.at(0).Phi());
+     }
+
+
+     if (passMonitorMuTrig && recoAK8DoubleBs.at(0)>0.0 && recoAK8SDmasses.at(0) > 40) {
+       h1_recoAK8pT_DB00_SD40_Mumonitoring->Fill(AK8jets.at(0).Pt());
+       h1_failingModule_DB00_SD40_Mu->Fill(failingModule);
+     }
+     if (passMonitorMuTrig && recoAK8DoubleBs.at(0)>0.9 && recoAK8SDmasses.at(0) > 40) {
+       h1_recoAK8pT_DB09_SD40_Mumonitoring->Fill(AK8jets.at(0).Pt());
+       h1_failingModule_DB09_SD40_Mu->Fill(failingModule);
+     }
+     if (passMonitorMuTrig && recoAK8DoubleBs.at(0)>0.9 && recoAK8SDmasses.at(0) > 40 && AK8jets.at(0).Pt() > 450) {
+       h1_failingModule_DB09_SD40_pT450_Mu->Fill(failingModule);
+       h1_recoAK8eta_DB09_SD40_pT450_Mumonitoring->Fill(AK8jets.at(0).Eta());
+       h1_recoAK8phi_DB09_SD40_pT450_Mumonitoring->Fill(AK8jets.at(0).Phi());
+     }
+
+
+     if (passMonitorAK8200Trig && recoAK8DoubleBs.at(0)<0.3 && recoAK8SDmasses.at(0) > 40) {
+       h1_recoAK8pT_DB03Inv_SD40_monitoring->Fill(AK8jets.at(0).Pt());
+     }
+
+
+     if (passDoubleBTrig_np4 && passMonitorAK8360Trig && recoAK8SDmasses.at(0) > 40) {
+       h1_recoAK8DoubleB_DoubleBTrig_np4_SD40_monitoring->Fill(recoAK8DoubleBs.at(0));
+       h1_recoAK8MaxDoubleB_DoubleBTrig_np4_SD40_monitoring->Fill(maxRecoAK8DoubleB);
+     }
+     if (passDoubleBTrig_np2 && passMonitorAK8360Trig && recoAK8SDmasses.at(0) > 40) {
+       h1_recoAK8DoubleB_DoubleBTrig_np2_SD40_monitoring->Fill(recoAK8DoubleBs.at(0));
+       h1_recoAK8MaxDoubleB_DoubleBTrig_np2_SD40_monitoring->Fill(maxRecoAK8DoubleB);
+     }
+
+     if (passCSVTrig_p17 && passMonitorAK8360Trig && AK8jets.at(0).Pt() > 450) {
+       h1_recoAK8DoubleB_CSVTrig_p17_pT450_monitoring->Fill(recoAK8DoubleBs.at(0));
+     }
      if (passDoubleBTrig_np4 && passMonitorAK8360Trig) {
+       h1_recoAK8eta_DoubleBTrig_np4_monitoring->Fill(AK8jets.at(0).Eta());
+       h1_recoAK8phi_DoubleBTrig_np4_monitoring->Fill(AK8jets.at(0).Phi());
        h1_recoAK8DoubleB_DoubleBTrig_np4_monitoring->Fill(recoAK8DoubleBs.at(0));     
        h1_recoAK8MaxDoubleB_DoubleBTrig_np4_monitoring->Fill(maxRecoAK8DoubleB);
      }
      if (passDoubleBTrig_np2 && passMonitorAK8360Trig) {
+       h1_recoAK8eta_DoubleBTrig_np2_monitoring->Fill(AK8jets.at(0).Eta());
+       h1_recoAK8phi_DoubleBTrig_np2_monitoring->Fill(AK8jets.at(0).Phi());
        h1_recoAK8DoubleB_DoubleBTrig_np2_monitoring->Fill(recoAK8DoubleBs.at(0));
        h1_recoAK8MaxDoubleB_DoubleBTrig_np2_monitoring->Fill(maxRecoAK8DoubleB); 
      }
 
+
+     if (passDoubleBTrig_np4 && passMonitorAK8360Trig && AK8jets.at(0).Pt() > 450) {
+       h1_recoAK8DoubleB_DoubleBTrig_np4_pT450_monitoring->Fill(recoAK8DoubleBs.at(0));
+     }
+     if (passDoubleBTrig_np2 && passMonitorAK8360Trig && AK8jets.at(0).Pt() > 450) {
+       h1_recoAK8DoubleB_DoubleBTrig_np2_pT450_monitoring->Fill(recoAK8DoubleBs.at(0));
+     }
+
+
      if (passMonitorAK8360Trig) {
+       h1_recoAK8eta_monitoring->Fill(AK8jets.at(0).Eta());
+       h1_recoAK8phi_monitoring->Fill(AK8jets.at(0).Phi());
        h1_recoAK8DoubleB_monitoring->Fill(recoAK8DoubleBs.at(0));
        h1_recoAK8MaxDoubleB_monitoring->Fill(maxRecoAK8DoubleB);
      }
+     if (passMonitorAK8360Trig && recoAK8SDmasses.at(0) > 40) {
+       h1_recoAK8DoubleB_SD40_monitoring->Fill(recoAK8DoubleBs.at(0));
+       h1_recoAK8MaxDoubleB_SD40_monitoring->Fill(maxRecoAK8DoubleB);
+     }
+     if (passMonitorAK8360Trig && AK8jets.at(0).Pt() > 450) {
+       h1_recoAK8DoubleB_pT450_monitoring->Fill(recoAK8DoubleBs.at(0));
+     }
+
 
    }
 

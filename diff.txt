@@ -1,0 +1,38 @@
+5d4
+< process.load('Configuration.StandardSequences.Services_cff')
+9,20c8
+< process.load('Configuration.EventContent.EventContent_cff')
+< process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
+< process.load('Configuration.StandardSequences.MagneticField_38T_cff')
+< process.load('Configuration.StandardSequences.EndOfProcess_cff')
+< 
+< process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+< from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
+< from Configuration.AlCa.autoCond import autoCond
+< process.GlobalTag = GlobalTag(process.GlobalTag, '101X_dataRun2_Prompt_v11') #
+< 
+< 
+< process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
+---
+> process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+35c23
+< mylist = FileUtils.loadListFromFile ('infile_Run2018B_v1.txt') 
+---
+> mylist = FileUtils.loadListFromFile ('infile.txt') 
+42d29
+< #          fileNames = cms.untracked.vstring ('root://cmsxrootd.fnal.gov//store/data/Run2018B/JetHT/MINIAOD/PromptReco-v1/000/317/930/00000/000B0765-D573-E811-AAA2-FA163E5B9703.root'),
+62,64d48
+< from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
+< jetToolbox( process, 'ak8', 'jetSequence', 'out', PUMethod='Puppi', miniAOD=True, runOnMC=False, addSoftDrop=True)
+< #jetToolbox( process, 'ak8', 'jetSequence', 'out', PUMethod='Puppi', miniAOD=True, runOnMC=False, bTagDiscriminators='pfBoostedDoubleSecondaryVertexAK8BJetTags', addSoftDrop=True)
+70,71c54,56
+<      recoAK8Jets        = cms.InputTag("selectedPatJetsAK8PFPuppi"),
+< #     recoAK8Jets        = cms.InputTag("slimmedJetsAK8", "", "RECO"),
+---
+>      recoAK8Jets        = cms.InputTag("slimmedJetsAK8", "", "RECO"),
+> #     recoAK8Jets        = cms.untracked.InputTag("slimmedJetsAK8", "", "RECO"),
+> #     muons           = cms.InputTag("hltScoutingMuonPacker", "", "HLT"),
+79c64
+< #        'pfCombinedSecondaryVertexV2BJetTags_test',
+---
+> #        'pfCombinedSecondaryVertexV2BJetTags',
