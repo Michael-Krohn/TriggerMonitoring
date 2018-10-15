@@ -27,7 +27,7 @@ scram b -j 8
 
 ### Locally:
 ```
-cd python
+cd TriggerMonitoring/python
 cmsRun ConfFile_DoubleB_cfg.py
 ```
 
