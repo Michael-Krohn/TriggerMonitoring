@@ -19,6 +19,8 @@ git cms-addpkg HLTrigger/Configuration
 git cms-checkdeps -A -a
 scram b -j 8
 
+git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_94X_v3
+
 git clone https://github.com/Michael-Krohn/TriggerMonitoring.git
 scram b -j 8
 ```
